@@ -29,24 +29,32 @@ public class GamePanel extends JPanel implements Runnable {
 	// World Settings
 	public final int maxWorldCol = 16;// 32;
 	public final int maxWorldRow = 12;// 26;
-	public final int maxWorldWidth = tileSize * maxWorldCol;
-	public final int maxWorldHeight = tileSize * maxWorldRow;
-
+	static int playedFanfare = 0;
+	
 	// Frames Per Second
 	int FPS;
 	int pirateUpdateCounter = 0;
 
-	KeyHandler keyHandler = new KeyHandler(this);
-	Thread gameThread;
-	public CollisionChecker collisionChecker = new CollisionChecker(this);
-
+	// System
+	KeyHandler keyHandler = new KeyHandler(this);	
 	TileManager tileM = new TileManager(this);
-
+	Sound sound = new Sound();
+	//Sound music = new Sound();
+	public CollisionChecker collisionChecker = new CollisionChecker(this);
+	public UI ui = new UI(this);
+	Thread gameThread;
+	
+	// Entities and Objects
 	// public Player player = new Player(this, keyHandler);
 	Treasure treasure = new Treasure(this);
 	int detectionRange;
 	ArrayList<Pirate> pirates = new ArrayList<Pirate>();
-
+	int pirateAtTreasure = 0;
+	
+	// Game State
+	public int gameState;
+	public final int playState = 1;
+	public final int pauseState = 2;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -67,7 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
 		treasure.visible = false;
 		detectionRange = 2;
 		
-		
+		gameState = playState;
 		gameThread = new Thread(this); // Diese Klasse (Spielfeld) wird als Konstruktor an den Thread uebergeben.
 		gameThread.start(); // ruft automatisch run() auf
 	}
@@ -111,58 +119,80 @@ public class GamePanel extends JPanel implements Runnable {
 		double delta = 0;
 		long lastTime = System.nanoTime();
 		long currentTime;
-		long timer = 0;
-		int drawCount = 0;
+		//long timer = 0;
+		//int drawCount = 0;
 
 		while (gameThread != null) {
 			currentTime = System.nanoTime();
 
 			delta += (currentTime - lastTime) / drawInterval;
-			timer += (currentTime - lastTime);
+			//timer += (currentTime - lastTime);
 			lastTime = currentTime;
 
 			if (delta >= 1) {
 				update();
 				repaint();
 				delta--;
-				drawCount++;
+				//drawCount++;
 			}
-
+			 /*
 			if (timer >= 1000000000) {
 				System.out.println("FPS: " + drawCount);
 				drawCount = 0;
 				timer = 0;
-			}
+			}*/
 		}
 	}
 
 	public void update() {
+		if(gameState == playState) {
+			pirateUpdateCounter++;
 
-		pirateUpdateCounter++;
-
-		if (pirateUpdateCounter >= FPS) {
+			if (pirateUpdateCounter >= FPS) {
+				for (Pirate pirate : pirates) {
+					pirate.update();
+				}
+				pirateUpdateCounter = 0;
+			}
 			for (Pirate pirate : pirates) {
-				pirate.update();
+				double distance = Math.sqrt(Math.pow((pirate.worldX - treasure.worldX), 2) + 
+						Math.pow((pirate.worldY - treasure.worldY), 2));
+				if (distance >= tileSize) {
+					pirate.move();	
+				} else {
+					pirate.atTreasure = true;
+				}
+				if (distance <= detectionRange*tileSize) {
+					Pirate.schatzGefunden = true;
+					treasure.visible = true;
+					
+					if (playedFanfare == 0) {
+						playSE(1);
+						playedFanfare = 1;
+						ui.gameFinished = true;
+						ui.showMessage("Schatz gefunden");
+					}
+				}
 			}
-			pirateUpdateCounter = 0;
-		}
-		for (Pirate pirate : pirates) {
-			double distance = Math.sqrt(Math.pow((pirate.worldX - treasure.worldX), 2) + 
-					Math.pow((pirate.worldY - treasure.worldY), 2));
-			if ( distance >= tileSize) {
-				pirate.move();	
+			for(Pirate pirate : pirates) {
+				if(pirate.atTreasure == true) {
+					pirateAtTreasure++;
+				} else {
+					pirateAtTreasure=0;
+				}
 			}
-			if (distance <= detectionRange*tileSize) {
-				Pirate.schatzGefunden = true;
-				treasure.visible = true;
+			if(pirateAtTreasure >= 3) {
+				gameThread = null;
 			}
-		}
 
-		// player.update();
-
+			// player.update();
+		}else if(gameState == pauseState) {
+			
+		}
 	}
 
 	public void paintComponent(Graphics g) {
+				
 		super.paintComponent(g); // parent class (JPanel) calls paintComponent
 		Graphics2D g2 = (Graphics2D) g;
 
@@ -174,6 +204,27 @@ public class GamePanel extends JPanel implements Runnable {
 		for (Pirate pirate : pirates) {
 			pirate.draw(g2);
 		}
+		
+		ui.draw(g2);
+		
 		g2.dispose();
+	}
+	
+	// If you want to add background music
+	/*
+	public void playMusic(int i) {
+		music.setFile(i);
+		music.play();
+		music.loop();
+
+	}
+	
+	public void stopMusic() {
+		music.stop();
+	}
+	*/
+	public void playSE(int i) {
+		sound.setFile(i);
+		sound.play();
 	}
 }

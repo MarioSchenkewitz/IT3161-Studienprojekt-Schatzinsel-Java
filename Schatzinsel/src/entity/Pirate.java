@@ -16,12 +16,13 @@ public class Pirate extends Entity {
 	Random rand = new Random();
 	int randomNumber;
 	public static boolean schatzGefunden = false;
+	public boolean atTreasure = false;
 
 	public Pirate(GamePanel gp, Treasure treasure, int speed) {
 		this.gp = gp;
 		this.treasure = treasure;
 
-		solidArea = new Rectangle(16, 24, gp.tileSize - 16, gp.tileSize - 24);
+		solidArea = new Rectangle(16, 24, gp.tileSize - 16, gp.tileSize - 25);
 
 		setDefaultValues(speed);
 		getPirateImage();
