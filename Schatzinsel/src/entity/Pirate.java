@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 
 public class Pirate extends Entity {
-	GamePanel gp;
 	Treasure treasure;
 	Random rand = new Random();
 	int randomNumber;
@@ -19,10 +18,10 @@ public class Pirate extends Entity {
 	public boolean atTreasure = false;
 
 	public Pirate(GamePanel gp, Treasure treasure, int speed) {
-		this.gp = gp;
+		super(gp);
 		this.treasure = treasure;
 
-		solidArea = new Rectangle(16, 24, gp.tileSize - 16, gp.tileSize - 25);
+		solidArea = new Rectangle(16, 25, gp.tileSize - 16, gp.tileSize - 25);
 
 		setDefaultValues(speed);
 		getPirateImage();
@@ -68,7 +67,39 @@ public class Pirate extends Entity {
 				direction = "right";
 				break;
 			}
+		} else {
+			if (treasure.worldX + 0.5 * gp.tileSize < this.worldX) {
+				direction = "left";				
+			} else if (treasure.worldX - 0.5 * gp.tileSize > this.worldX) {
+				direction = "right";
+			}
+
+			if (treasure.worldY  + 0.5 * gp.tileSize < this.worldY) {
+				direction = "up";
+			} else if (treasure.worldY - 0.5 * gp.tileSize > this.worldY) {
+				direction = "down";
+			}		
 		}
+		
+		gp.collisionChecker.checkTile(this);
+		while(collisionOn == true) {
+			switch (direction) {
+			case "up":
+				direction = "right";
+				break;
+			case "down":
+				direction = "left";
+				break;
+			case "left":
+				direction = "up";
+				break;
+			case "right":
+				direction = "down";
+				break;
+			}
+			gp.collisionChecker.checkTile(this);
+		}
+		
 	}
 
 	public void update() {
@@ -77,40 +108,7 @@ public class Pirate extends Entity {
 
 	public void move() {
 		collisionOn = false;
-		if (schatzGefunden == true) {
-			if (treasure.worldX < this.worldX) {
-				direction = "left";
-			} else if (treasure.worldX > this.worldX) {
-				direction = "right";
-			}
-
-			if (treasure.worldY < this.worldY) {
-				direction = "up";
-			} else if (treasure.worldY > this.worldY) {
-				direction = "down";
-			}
-		}
-/*
-gp.collisionChecker.checkTile(this);
-		
-		if (schatzGefunden == true && collisionOn == true) {
-			if (treasure.worldX < this.worldX) {
-				direction = "up";
-			} else if (treasure.worldX > this.worldX) {
-				direction = "down";
-			}
-
-			if (treasure.worldY < this.worldY) {
-				direction = "right";
-			} else if (treasure.worldY > this.worldY) {
-				direction = "left";
-			}
-		}
- */
-		
-		
 		gp.collisionChecker.checkTile(this);
-		
 		if (collisionOn == false) {
 			switch (direction) {
 			case "up":
@@ -126,7 +124,7 @@ gp.collisionChecker.checkTile(this);
 				worldX += speed;
 				break;
 			}
-		} 
+		}
 
 		spriteCounter++;
 		if (spriteCounter > 12) {

@@ -11,14 +11,13 @@ import main.KeyHandler;
 
 public class Player extends Entity{
 
-	GamePanel gp;
 	KeyHandler keyHandler;
 	
 	public final int screenX;
 	public final int screenY;
 	
 	public Player(GamePanel gp, KeyHandler keyHandler) {
-		this.gp = gp;
+		super(gp);
 		this.keyHandler = keyHandler;
 		
 		screenX = gp.screenWidth/2 - (gp.tileSize/2);

@@ -3,8 +3,11 @@ package entity;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-public class Entity {
+import main.GamePanel;
 
+public abstract class Entity {
+
+	GamePanel gp;
 	public int worldX, worldY;
 	public int speed;
 	
@@ -16,4 +19,9 @@ public class Entity {
 	
 	public Rectangle solidArea;
 	public boolean collisionOn = false;
+	
+	public Entity(GamePanel gp) {		
+		this.gp = gp;
+	}
+	
 }

@@ -10,14 +10,13 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 
 public class Treasure extends Entity {
-	GamePanel gp;
 	Random rand = new Random();
 	int randomNumber;
 	
 	public boolean visible;
 
 	public Treasure(GamePanel gp) {
-		this.gp = gp;
+		super(gp);
 		setDefaultValues();
 		getTreasureImage();
 	}
