@@ -30,6 +30,14 @@ public class Pirate extends Entity {
 	public void setDefaultValues(int speed) {
 		worldX = 2*gp.tileSize + gp.tileSize * rand.nextInt(12);
 		worldY = 2*gp.tileSize + gp.tileSize * rand.nextInt(8);
+		
+		while(worldX > treasure.worldX - gp.detectionRange*2 && worldX < treasure.worldX + gp.detectionRange*2) {
+			worldX = 2*gp.tileSize + gp.tileSize * rand.nextInt(12);
+		}
+		while(worldY > treasure.worldY - gp.detectionRange*2 && worldY < treasure.worldY + gp.detectionRange*2) {
+			worldY = 2*gp.tileSize + gp.tileSize * rand.nextInt(8);
+		}
+		
 		this.speed = speed;
 		direction = "down";
 	}

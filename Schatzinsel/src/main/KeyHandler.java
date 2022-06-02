@@ -58,7 +58,9 @@ public class KeyHandler implements KeyListener{
 			if(code == KeyEvent.VK_ENTER) {
 				switch(gp.ui.commandNum) {
 				case 0:
-					gp.gameState = gp.playState;
+					if (gp.gameState == gp.titleState) {
+						gp.gameState = gp.playState;
+					}					
 					break;
 				case 1:
 					if(gp.treasure.visible == true) {
@@ -104,16 +106,26 @@ public class KeyHandler implements KeyListener{
 			}
 		}
 		
-		if(gp.gameState == gp.playState) {
+		/*
+		 if(gp.gameState == gp.playState) {
 			if(code == KeyEvent.VK_P) {
 				gp.gameState = gp.pauseState;
 			}
-		}
-		if(gp.gameState == gp.pauseState) {
+		}else if(gp.gameState == gp.pauseState) {
 			if(code == KeyEvent.VK_P) {
 				gp.gameState = gp.playState;
 			}
 		}
+		 */
+		
+		if(code == KeyEvent.VK_P) {
+			if(gp.gameState == gp.playState) {
+				gp.gameState = gp.pauseState;
+			}else if(gp.gameState == gp.pauseState) {
+				gp.gameState = gp.playState;
+			}
+		}
+		
 
 		if(code == KeyEvent.VK_ESCAPE) {
 			System.exit(0);

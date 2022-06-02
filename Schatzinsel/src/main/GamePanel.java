@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import entity.Pirate;
-import entity.Player;
 import entity.Treasure;
-import tile.Tile;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -47,7 +45,7 @@ public class GamePanel extends JPanel implements Runnable {
 	// Entities and Objects
 	// public Player player = new Player(this, keyHandler);
 	public Treasure treasure = new Treasure(this);
-	int detectionRange;
+	public int detectionRange;
 	ArrayList<Pirate> pirates = new ArrayList<Pirate>();
 	public Pirate defaultPirate = new Pirate(this, treasure, 2);
 	int pirateAtTreasure = 0;
@@ -76,7 +74,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 		FPS = 60;
 		treasure.visible = true;
-		detectionRange = 3;
+		detectionRange = 2;
 
 		gameState = titleState;
 		gameThread = new Thread(this); // Diese Klasse (Spielfeld) wird als Konstruktor an den Thread uebergeben.
@@ -194,6 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
 		} else if (gameState == pauseState) {
 
 		}
+		//System.out.println(gameState);
 	}
 
 	public void paintComponent(Graphics g) {
